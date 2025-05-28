@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<title>Topu Yakala Oyunu</title>
+<style>
+  body { 
+    margin: 0; 
+    overflow: hidden; 
+    background: #222; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    color: white; 
+    font-family: Arial, sans-serif;
+  }
+  #gameCanvas {
+    background: #333;
+    border: 2px solid #555;
+    cursor: pointer;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Puan: 0</div>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const scoreDisplay = document.getElementById('score');
+
+  let score = 0;
+
+  // Topun özellikleri
+  const ball = {
+    x: Math.random() * (canvas.width - 40) + 20,
+    y: Math.random() * (canvas.height - 40) + 20,
+    radius: 20,
+    dx: 3,
+    dy: 2
+  };
+
+  function drawBall() {
+    ctx.beginPath();
+    ctx.fillStyle = '#ff6f61';
+    ctx.shadowColor = 'rgba(255, 111, 97, 0.7)';
+    ctx.shadowBlur = 15;
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Topu hareket ettir
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Kenarlara çarpınca yön değiştir
+    if(ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+      ball.dx *= -1;
+    }
+    if(ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+      ball.dy *= -1;
+    }
+
+    drawBall();
+
+    requestAnimationFrame(update);
+  }
+
+  // Topa tıklanma kontrolü
+  canvas.addEventListener('click', function(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // Topun içine tıklanmış mı kontrolü
+    const dist = Math.hypot(mouseX - ball.x, mouseY - ball.y);
+    if(dist <= ball.radius) {
+      score++;
+      scoreDisplay.textContent = 'Puan: ' + score;
+      // Topu rastgele başka yere taşı
+      ball.x = Math.random() * (canvas.width - 40) + 20;
+      ball.y = Math.random() * (canvas.height - 40) + 20;
+    }
+  });
+
+  update();
+</script>
+
+</body>
+</html>
