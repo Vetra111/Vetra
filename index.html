@@ -2,35 +2,100 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<title>Oyun Kutusu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>dangerana</title>
 <style>
-  .game-box {
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(135deg, #ff4d4d, #ff0000);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #222;
+    overflow: hidden;
+    position: relative;
+    font-family: Arial, sans-serif;
     color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    box-shadow: 0 0 15px #ff0000aa;
-    user-select: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
   }
-  .game-box:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px #ff3300cc;
+  #top {
+    width: 50px;
+    height: 50px;
+    background: orange;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #yazi {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
 </style>
 </head>
 <body>
 
-<div class="game-box" onclick="alert('Dangerın anasını yakala!')">
-  Dangerın anasını yakala
-</div>
+<div id="top"></div>
+<div id="yazi">dangerın anası</div>
+
+<script>
+  const top = document.getElementById('top');
+  const yazi = document.getElementById('yazi');
+  const jumpHeight = 150;
+  let isJumping = false;
+
+  function showYaziRandomPosition() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const x = Math.random() * (screenWidth - yazi.offsetWidth);
+    const y = Math.random() * (screenHeight - yazi.offsetHeight);
+    yazi.style.left = `${x}px`;
+    yazi.style.top = `${y}px`;
+    yazi.style.opacity = 1;
+
+    setTimeout(() => {
+      yazi.style.opacity = 0;
+    }, 500);
+  }
+
+  function jump() {
+    if (isJumping) return;
+    isJumping = true;
+    showYaziRandomPosition();
+
+    let start = null;
+    const duration = 500; // zıplama süresi
+
+    function animateJump(timestamp) {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = elapsed / duration;
+
+      if (progress < 0.5) {
+        // yukarı zıplama
+        top.style.bottom = `${20 + jumpHeight * (progress * 2)}px`;
+      } else if (progress < 1) {
+        // aşağı inme
+        top.style.bottom = `${20 + jumpHeight * (2 - progress * 2)}px`;
+      } else {
+        top.style.bottom = '20px';
+        isJumping = false;
+        return;
+      }
+      requestAnimationFrame(animateJump);
+    }
+    requestAnimationFrame(animateJump);
+  }
+
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      jump();
+    }
+  });
+</script>
 
 </body>
 </html>
