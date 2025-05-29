@@ -46,62 +46,59 @@
 
   let step = 0;
   const maxSteps = 6;
+  const flexStep = 0.2;
+  const minSaveFlex = 0;
+  const maxFuckFlex = 7;
 
-  // Başlangıç flex değerleri eşit
-  let saveFlex = 1;
-  let fuckFlex = 1;
+  saveBox.style.flexGrow = 1;
+  fuckBox.style.flexGrow = 1;
 
-  // Her aşamada değişecek miktar
-  const flexStep = 0.2; // toplam 6 adımda 1.2 değişim olacak (1 -> -0.2 * 6 = -0.2 x6 = -1.2, yani save 0 oluyor)
-  const minSaveFlex = 0;  // en son tamamen küçülür
-  const maxFuckFlex = 7;  // en son tam büyür (eski 1 + 6*0.2= 2.2'den büyük, biraz büyük yapıyoruz)
-
-  saveBox.style.flexGrow = saveFlex;
-  fuckBox.style.flexGrow = fuckFlex;
-
-  // font büyüklüğü başlangıç
-  saveBox.style.fontSize = (1 + saveFlex * 1.5) + "rem";
-  fuckBox.style.fontSize = (1 + fuckFlex * 1.5) + "rem";
+  saveBox.style.fontSize = (1 + 1 * 1.5) + "rem";
+  fuckBox.style.fontSize = (1 + 1 * 1.5) + "rem";
 
   saveBox.addEventListener('click', () => {
-    if(step >= maxSteps) return;
+    if (step >= maxSteps) return;
 
     step++;
 
-    // Yeni flex değerlerini hesapla
-    saveFlex = Math.max(minSaveFlex, 1 - flexStep * step);
-    fuckFlex = Math.min(maxFuckFlex, 1 + flexStep * step);
+    const saveFlex = Math.max(minSaveFlex, 1 - flexStep * step);
+    const fuckFlex = Math.min(maxFuckFlex, 1 + flexStep * step);
 
-    // Flex değerleri animasyonlu değişsin
     saveBox.style.flexGrow = saveFlex;
     fuckBox.style.flexGrow = fuckFlex;
 
-    // Font büyüklüğü güncelle
     saveBox.style.fontSize = (1 + saveFlex * 1.5) + "rem";
     fuckBox.style.fontSize = (1 + fuckFlex * 1.5) + "rem";
 
-    // Eğer son aşamadaysak saveBox tamamen gizle, fuckBox tam ekran yap
-    if(step === maxSteps) {
-      // saveBox kaybolsun
-      saveBox.style.opacity = '0';
-      saveBox.style.pointerEvents = 'none';
-
-      // fuckBox tam ekran animasyonu
-      fuckBox.style.transition = 'all 1s ease';
-      fuckBox.style.position = 'fixed';
-      fuckBox.style.top = '0';
-      fuckBox.style.left = '0';
-      fuckBox.style.width = '100vw';
-      fuckBox.style.height = '100vh';
-      fuckBox.style.flexGrow = '0';
-      fuckBox.style.fontSize = '6rem';
-      fuckBox.style.borderRadius = '0';
-      fuckBox.style.zIndex = '9999';
-
-      // Container artık gerekli değil, gizleyebiliriz
-      container.style.pointerEvents = 'none';
+    if (step === maxSteps) {
+      triggerFullScreenFuck();
     }
   });
+
+  fuckBox.addEventListener('click', () => {
+    triggerFullScreenFuck();
+  });
+
+  function triggerFullScreenFuck() {
+    // Kurtar kutusunu gizle
+    saveBox.style.opacity = '0';
+    saveBox.style.pointerEvents = 'none';
+
+    // Diğer kutuyu büyüt
+    fuckBox.style.transition = 'all 1s ease';
+    fuckBox.style.position = 'fixed';
+    fuckBox.style.top = '0';
+    fuckBox.style.left = '0';
+    fuckBox.style.width = '100vw';
+    fuckBox.style.height = '100vh';
+    fuckBox.style.flexGrow = '0';
+    fuckBox.style.fontSize = '6rem';
+    fuckBox.style.borderRadius = '0';
+    fuckBox.style.zIndex = '9999';
+
+    // Diğer her şey pasif
+    container.style.pointerEvents = 'none';
+  }
 </script>
 </body>
 </html>
