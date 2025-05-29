@@ -3,99 +3,105 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Top Zıplama Oyunu</title>
+<title>DANGER</title>
 <style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: #222;
-    overflow: hidden;
-    position: relative;
+  body, html {
+    margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background: #222;
     font-family: Arial, sans-serif;
+    overflow: hidden;
+  }
+  .container {
+    width: 80vw; height: 60vh; display: flex; gap: 20px;
+    transition: all 0.5s ease;
+  }
+  .box {
+    flex-grow: 1;
+    background: #444;
     color: white;
-  }
-  #top {
-    width: 50px;
-    height: 50px;
-    background: orange;
-    border-radius: 50%;
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  #yazi {
-    position: absolute;
-    font-size: 24px;
-    font-weight: bold;
-    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 10px;
     user-select: none;
+    transition: flex-grow 0.5s ease, font-size 0.5s ease, opacity 0.5s ease;
+  }
+  .hidden {
     opacity: 0;
-    transition: opacity 0.3s;
+    pointer-events: none;
   }
 </style>
 </head>
 <body>
-
-<div id="top"></div>
-<div id="yazi">dangerın anası</div>
+  <div class="container">
+    <div id="save" class="box">Danger'ın Anasını Kurtar</div>
+    <div id="fuck" class="box">Danger'ın Anasıyla Sikiş</div>
+  </div>
 
 <script>
-  const top = document.getElementById('top');
-  const yazi = document.getElementById('yazi');
-  const jumpHeight = 150;
-  let isJumping = false;
+  const saveBox = document.getElementById('save');
+  const fuckBox = document.getElementById('fuck');
+  const container = document.querySelector('.container');
 
-  function showYaziRandomPosition() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const x = Math.random() * (screenWidth - yazi.offsetWidth);
-    const y = Math.random() * (screenHeight - yazi.offsetHeight);
-    yazi.style.left = `${x}px`;
-    yazi.style.top = `${y}px`;
-    yazi.style.opacity = 1;
+  let step = 0;
+  const maxSteps = 6;
 
-    setTimeout(() => {
-      yazi.style.opacity = 0;
-    }, 500);
-  }
+  // Başlangıç flex değerleri eşit
+  let saveFlex = 1;
+  let fuckFlex = 1;
 
-  function jump() {
-    if (isJumping) return;
-    isJumping = true;
-    showYaziRandomPosition();
+  // Her aşamada değişecek miktar
+  const flexStep = 0.2; // toplam 6 adımda 1.2 değişim olacak (1 -> -0.2 * 6 = -0.2 x6 = -1.2, yani save 0 oluyor)
+  const minSaveFlex = 0;  // en son tamamen küçülür
+  const maxFuckFlex = 7;  // en son tam büyür (eski 1 + 6*0.2= 2.2'den büyük, biraz büyük yapıyoruz)
 
-    let start = null;
-    const duration = 500; // zıplama süresi
+  saveBox.style.flexGrow = saveFlex;
+  fuckBox.style.flexGrow = fuckFlex;
 
-    function animateJump(timestamp) {
-      if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-      const progress = elapsed / duration;
+  // font büyüklüğü başlangıç
+  saveBox.style.fontSize = (1 + saveFlex * 1.5) + "rem";
+  fuckBox.style.fontSize = (1 + fuckFlex * 1.5) + "rem";
 
-      if (progress < 0.5) {
-        // yukarı zıplama
-        top.style.bottom = `${20 + jumpHeight * (progress * 2)}px`;
-      } else if (progress < 1) {
-        // aşağı inme
-        top.style.bottom = `${20 + jumpHeight * (2 - progress * 2)}px`;
-      } else {
-        top.style.bottom = '20px';
-        isJumping = false;
-        return;
-      }
-      requestAnimationFrame(animateJump);
-    }
-    requestAnimationFrame(animateJump);
-  }
+  saveBox.addEventListener('click', () => {
+    if(step >= maxSteps) return;
 
-  window.addEventListener('keydown', e => {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      jump();
+    step++;
+
+    // Yeni flex değerlerini hesapla
+    saveFlex = Math.max(minSaveFlex, 1 - flexStep * step);
+    fuckFlex = Math.min(maxFuckFlex, 1 + flexStep * step);
+
+    // Flex değerleri animasyonlu değişsin
+    saveBox.style.flexGrow = saveFlex;
+    fuckBox.style.flexGrow = fuckFlex;
+
+    // Font büyüklüğü güncelle
+    saveBox.style.fontSize = (1 + saveFlex * 1.5) + "rem";
+    fuckBox.style.fontSize = (1 + fuckFlex * 1.5) + "rem";
+
+    // Eğer son aşamadaysak saveBox tamamen gizle, fuckBox tam ekran yap
+    if(step === maxSteps) {
+      // saveBox kaybolsun
+      saveBox.style.opacity = '0';
+      saveBox.style.pointerEvents = 'none';
+
+      // fuckBox tam ekran animasyonu
+      fuckBox.style.transition = 'all 1s ease';
+      fuckBox.style.position = 'fixed';
+      fuckBox.style.top = '0';
+      fuckBox.style.left = '0';
+      fuckBox.style.width = '100vw';
+      fuckBox.style.height = '100vh';
+      fuckBox.style.flexGrow = '0';
+      fuckBox.style.fontSize = '6rem';
+      fuckBox.style.borderRadius = '0';
+      fuckBox.style.zIndex = '9999';
+
+      // Container artık gerekli değil, gizleyebiliriz
+      container.style.pointerEvents = 'none';
     }
   });
 </script>
-
 </body>
 </html>
