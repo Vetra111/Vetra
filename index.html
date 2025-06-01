@@ -50,17 +50,48 @@
       right: 20%;
       bottom: 30%;
     }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      display: none;
+    }
+
+    .popup img {
+      max-width: 80vw;
+      max-height: 80vh;
+      border: 5px solid white;
+      border-radius: 15px;
+      box-shadow: 0 0 30px black;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div id="escape-circle" class="circle">Claxyi Kurtar</div>
-    <div id="click-circle" class="circle" onclick="alert('tebrikler claxyi yerden yere vurdun 😅')">claxyi yerden yere vur</div>
+    <div id="click-circle" class="circle">Tıkla</div>
   </div>
+
+  <div class="popup" id="popup">
+    <img src="merhaba.png" alt="merhaba" id="popup-img">
+  </div>
+
+  <!-- Müzik -->
+  <audio id="background-audio" loop>
+    <source src="claxy.mp3" type="audio/mpeg">
+    Tarayıcınız audio etiketini desteklemiyor.
+  </audio>
 
   <script>
     const escapeCircle = document.getElementById('escape-circle');
     const container = document.querySelector('.container');
+    const popup = document.getElementById('popup');
+    const popupImg = document.getElementById('popup-img');
+    const audio = document.getElementById('background-audio');
 
     container.addEventListener('mousemove', (e) => {
       const rect = escapeCircle.getBoundingClientRect();
@@ -78,6 +109,18 @@
         escapeCircle.style.left = `${newX}px`;
         escapeCircle.style.top = `${newY}px`;
       }
+    });
+
+    document.getElementById('click-circle').addEventListener('click', () => {
+      popup.style.display = 'block';
+      audio.play(); // müzik başlasın
+    });
+
+    popupImg.addEventListener('click', () => {
+      popup.style.display = 'none';
+      // Eğer istersen burada müziği durdurabilirsin:
+      // audio.pause();
+      // audio.currentTime = 0;
     });
   </script>
 </body>
