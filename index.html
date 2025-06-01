@@ -1,104 +1,84 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Şaka Sitesi</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background: #222;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-  }
-  .container {
-    width: 80vw; height: 60vh; display: flex; gap: 20px;
-    transition: all 0.5s ease;
-  }
-  .box {
-    flex-grow: 1;
-    background: #444;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    cursor: pointer;
-    border-radius: 10px;
-    user-select: none;
-    transition: flex-grow 0.5s ease, font-size 0.5s ease, opacity 0.5s ease;
-  }
-  .hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Claxyi Kurtar!</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+    }
+
+    .container {
+      position: relative;
+      width: 90vw;
+      height: 90vh;
+      background: #222;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .circle {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    #escape-circle {
+      background: crimson;
+      left: 20%;
+      top: 30%;
+    }
+
+    #click-circle {
+      background: limegreen;
+      right: 20%;
+      bottom: 30%;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div id="save" class="box">Danger'ın Anasını Kurtar</div>
-    <div id="fuck" class="box">Danger'ın Anasıyla Sikiş</div>
+    <div id="escape-circle" class="circle">Claxyi Kurtar</div>
+    <div id="click-circle" class="circle" onclick="alert('tebrikler claxyi yerden yere vurdun 😅')">claxyi yerden yere vur</div>
   </div>
 
-<script>
-  const saveBox = document.getElementById('save');
-  const fuckBox = document.getElementById('fuck');
-  const container = document.querySelector('.container');
+  <script>
+    const escapeCircle = document.getElementById('escape-circle');
+    const container = document.querySelector('.container');
 
-  let step = 0;
-  const maxSteps = 6;
-  const flexStep = 0.2;
-  const minSaveFlex = 0;
-  const maxFuckFlex = 7;
+    container.addEventListener('mousemove', (e) => {
+      const rect = escapeCircle.getBoundingClientRect();
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
 
-  saveBox.style.flexGrow = 1;
-  fuckBox.style.flexGrow = 1;
+      const dx = mouseX - (rect.left + rect.width / 2);
+      const dy = mouseY - (rect.top + rect.height / 2);
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-  saveBox.style.fontSize = (1 + 1 * 1.5) + "rem";
-  fuckBox.style.fontSize = (1 + 1 * 1.5) + "rem";
+      if (distance < 100) {
+        const newX = Math.random() * (container.clientWidth - 120);
+        const newY = Math.random() * (container.clientHeight - 120);
 
-  saveBox.addEventListener('click', () => {
-    if (step >= maxSteps) return;
-
-    step++;
-
-    const saveFlex = Math.max(minSaveFlex, 1 - flexStep * step);
-    const fuckFlex = Math.min(maxFuckFlex, 1 + flexStep * step);
-
-    saveBox.style.flexGrow = saveFlex;
-    fuckBox.style.flexGrow = fuckFlex;
-
-    saveBox.style.fontSize = (1 + saveFlex * 1.5) + "rem";
-    fuckBox.style.fontSize = (1 + fuckFlex * 1.5) + "rem";
-
-    if (step === maxSteps) {
-      triggerFullScreenFuck();
-    }
-  });
-
-  fuckBox.addEventListener('click', () => {
-    triggerFullScreenFuck();
-  });
-
-  function triggerFullScreenFuck() {
-    // Kurtar kutusunu gizle
-    saveBox.style.opacity = '0';
-    saveBox.style.pointerEvents = 'none';
-
-    // Diğer kutuyu büyüt
-    fuckBox.style.transition = 'all 1s ease';
-    fuckBox.style.position = 'fixed';
-    fuckBox.style.top = '0';
-    fuckBox.style.left = '0';
-    fuckBox.style.width = '100vw';
-    fuckBox.style.height = '100vh';
-    fuckBox.style.flexGrow = '0';
-    fuckBox.style.fontSize = '6rem';
-    fuckBox.style.borderRadius = '0';
-    fuckBox.style.zIndex = '9999';
-
-    // Diğer her şey pasif
-    container.style.pointerEvents = 'none';
-  }
-</script>
+        escapeCircle.style.left = `${newX}px`;
+        escapeCircle.style.top = `${newY}px`;
+      }
+    });
+  </script>
 </body>
 </html>
